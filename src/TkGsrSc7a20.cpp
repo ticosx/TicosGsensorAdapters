@@ -2,23 +2,23 @@
 #include "esp_log.h"
 #include "TkGsrSc7a20.h"
 
-static const char *TAG = "sc7a20";
+static const char *TAG = "TkGsrSc7a20";
 
-Gsensor_Sc7a20::Gsensor_Sc7a20(Adafruit_I2CDevice *i2cdevice) : GsensorAdapter(i2cdevice) {
+TkGsrSc7a20::TkGsrSc7a20(Adafruit_I2CDevice *i2cdevice) : GsensorAdapter(i2cdevice) {
 
 }
 
-bool Gsensor_Sc7a20::readReg(uint8_t reg_add, uint8_t *p_data)
+bool TkGsrSc7a20::readReg(uint8_t reg_add, uint8_t *p_data)
 {
     return i2cdevice->write_then_read(&reg_add, sizeof(reg_add), p_data, 1, true);
 }
 
-bool Gsensor_Sc7a20::writeReg(uint8_t reg_add, uint8_t data)
+bool TkGsrSc7a20::writeReg(uint8_t reg_add, uint8_t data)
 {
     return i2cdevice->write( &data, sizeof(data), true, &reg_add, sizeof(reg_add));
 }
 
-bool Gsensor_Sc7a20::init() {
+bool TkGsrSc7a20::init() {
 
     uint8_t  gsensor_id = 0;
     uint8_t  i = 0;
@@ -41,7 +41,7 @@ bool Gsensor_Sc7a20::init() {
     return res;
 }
 //获取gsensor FIFO数据
-uint8_t Gsensor_Sc7a20::getFifoBuf(signed short *x_buf,signed short *y_buf,signed short *z_buf)
+uint8_t TkGsrSc7a20::getFifoBuf(signed short *x_buf,signed short *y_buf,signed short *z_buf)
 {
     uint8_t  i=0,m=0;
     uint8_t  XL_BUF = 0;
@@ -70,7 +70,7 @@ uint8_t Gsensor_Sc7a20::getFifoBuf(signed short *x_buf,signed short *y_buf,signe
          y_buf[i] =(signed short )((YH_BUF << 8 ) | YL_BUF);
          z_buf[i] =(signed short )((ZH_BUF << 8 ) | ZL_BUF);
 
-         printf("Gsensor_Sc7a20 ,i:%d,X:%d,Y:%d,Z:%d\n",i,x_buf[i],y_buf[i],z_buf[i]);
+         printf("TkGsrSc7a20 ,i:%d,X:%d,Y:%d,Z:%d\n",i,x_buf[i],y_buf[i],z_buf[i]);
      }
 
     //重载数据
@@ -80,7 +80,7 @@ uint8_t Gsensor_Sc7a20::getFifoBuf(signed short *x_buf,signed short *y_buf,signe
     return fifo_nums;
 }
 
-uint8_t Gsensor_Sc7a20::getGsensorvalue(signed short *x,signed short *y,signed short *z)
+uint8_t TkGsrSc7a20::getGsensorvalue(signed short *x,signed short *y,signed short *z)
 {
     signed short X[32] = {0};
     signed short Y[32] = {0};

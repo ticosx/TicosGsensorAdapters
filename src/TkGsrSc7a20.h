@@ -46,10 +46,10 @@ const uint8_t sc7a20_init_reg2[12]=
 /*!
  * @brief The class of gsensor sc7a20
  */
-class Gsensor_Sc7a20: public GsensorAdapter{
+class TkGsrSc7a20: public GsensorAdapter{
 
     public:
-        Gsensor_Sc7a20(Adafruit_I2CDevice *i2cdevice);
+        TkGsrSc7a20(Adafruit_I2CDevice *i2cdevice);
         virtual uint8_t getFifoBuf(signed short *x_buf,signed short *y_buf,signed short *z_buf) override;
         virtual uint8_t getGsensorvalue(signed short *x,signed short *y,signed short *z) override;
         virtual bool init() override;
