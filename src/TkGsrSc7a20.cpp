@@ -1,6 +1,7 @@
 
 #include "esp_log.h"
 #include "TkGsrSc7a20.h"
+#include "freertos/task.h"
 
 static const char *TAG = "TkGsrSc7a20";
 
@@ -23,10 +24,14 @@ bool TkGsrSc7a20::init() {
     uint8_t  gsensor_id = 0;
     uint8_t  i = 0;
     bool res = true;
-  //配置参数
+    //复位
+    writeReg(0x24,0x80);
+    vTaskDelay(pdMS_TO_TICKS(20));
+    //配置参数
     for(i=0;i<SC7A20_REG2_NUM;i++)
     {
        res &= writeReg(sc7a20_init_reg2[3*i],sc7a20_init_reg2[3*i+1]);
+       printf("res = 0x%02x,data:0x%02x\n", sc7a20_init_reg2[3*i],sc7a20_init_reg2[3*i+1]);
     }
     //校验reg值
    /* for(i=0;i<SC7A20_REG2_NUM;i++)
@@ -56,7 +61,8 @@ uint8_t TkGsrSc7a20::getFifoBuf(signed short *x_buf,signed short *y_buf,signed s
     //获取FIFO数据长度
     readReg(SL_SC7A20_FIFO_SRC_REG,&fifo_nums);//获取FIFO数量
     fifo_nums = fifo_nums & 0x1f; //限长
-
+    if(fifo_nums < 1)return 0;
+    printf("TkGsrSc7a20 ,fifo_nums:%d\n",fifo_nums);
     for(i=0;i<fifo_nums;i++)
     {
          readReg(OUT_X_L_REG, &XL_BUF);
@@ -70,7 +76,8 @@ uint8_t TkGsrSc7a20::getFifoBuf(signed short *x_buf,signed short *y_buf,signed s
          y_buf[i] =(signed short )((YH_BUF << 8 ) | YL_BUF);
          z_buf[i] =(signed short )((ZH_BUF << 8 ) | ZL_BUF);
 
-         printf("TkGsrSc7a20 ,i:%d,X:%d,Y:%d,Z:%d\n",i,x_buf[i],y_buf[i],z_buf[i]);
+       // printf("TkGsrSc7a20 ,i:%d,X:%d,Y:%d,Z:%d\n",i,x_buf[i],y_buf[i],z_buf[i]);
+       // printf("TkGsrSc7a20 ,i:%d,X:0x%x,Y:0x%x,Z:0x%x\n",i,x_buf[i],y_buf[i],z_buf[i]);
      }
 
     //重载数据
@@ -95,7 +102,6 @@ uint8_t TkGsrSc7a20::getGsensorvalue(signed short *x,signed short *y,signed shor
        return 1;
     }
     return 0;
-   
 }
  #if 0
 static void Gsensor_Task(void *arg) 
